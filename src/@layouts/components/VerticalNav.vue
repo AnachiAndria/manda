@@ -96,7 +96,7 @@ const hideTitleAndIcon = configStore.isVerticalNavMini(isHovered)
               v-show="!hideTitleAndIcon"
               class="app-logo-title leading-normal"
             >
-              G-SUIVI
+              SylloTrack 
               <!-- {{ layoutConfig.app.title }} -->
               <!-- nameDashboard -->
             </h1>

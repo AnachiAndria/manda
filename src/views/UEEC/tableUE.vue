@@ -126,6 +126,7 @@ const closeDelete = () => {
 // Add UE (communicating with backend)
 const addUE = async () => {
   try {
+
     const response = await fetch('http://localhost:3000/api/UE/UE', {
       method: 'POST',
       headers: {

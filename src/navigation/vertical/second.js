@@ -1,34 +1,37 @@
 export default [
   {
+    title: 'Parcours',
+    to: { name: 'parcour' },
+    icon: { icon: 'tabler-list-letters' },
+  },
+
+  {
+    title: 'Unite d\'Enseignement',
+    to: { name: 'ue' },
+    icon: { icon: 'tabler-files' },
+  },
+
+  {
+    title: 'Element Constitutif',
+    to: { name: 'ec' },
+    icon: { icon: 'tabler-file' },
+  },
+  {
     title: 'Syllabus',
     to: { name: 'syllabus' },
-    icon: { icon: 'tabler-file' },
+    icon: { icon: 'tabler-folder' },
 
     children: [
       {
         title: 'Ajouter',
         to: 'syllabus', //name not link
       }, {
-        title: 'List',
+        title: 'Lister',
         to: 'liste-syll',
       },
     ],
   },
-  {
-    title: 'EC',
-    to: { name: 'ec' },
-    icon: { icon: 'tabler-file' },
-  },
-  {
-    title: 'UE',
-    to: { name: 'ue' },
-    icon: { icon: 'tabler-file' },
-  },
-  {
-    title: 'Parcour',
-    to: { name: 'parcour' },
-    icon: { icon: 'tabler-file' },
-  },
+  
 ]
 
 /*
