@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue';
+import { ref } from 'vue'
 
 const refForm = ref()
 const newMdp = ref('')
@@ -46,7 +46,7 @@ async function openConfirmDialog() {
 // Function to handle the actual modification after password verification
 async function modifyUser() {
   // Send password and updated data to the backend for validation and modification
-  const response = await fetch(`http://localhost:5000/api/user/updateProfile/${userData.value.IdUser}`, {
+  const response = await fetch(`http://localhost:3000/api/user/user/updateProfile/${userData.value.IdUser}`, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({

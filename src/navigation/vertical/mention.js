@@ -3,7 +3,7 @@ export default [
   {
     title: 'Mention',
     to: { name: 'mention' },
-    icon: { icon: 'tabler-smart-home' },
+    icon: { icon: 'tabler-brand-medium' },
   },
 ]
     
