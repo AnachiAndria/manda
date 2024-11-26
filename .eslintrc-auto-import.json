@@ -359,6 +359,7 @@
     "useModel": true,
     "useTemplateRef": true,
     "useAbility": true,
-    "useLink": true
+    "useLink": true,
+    "Gpt": true
   }
 }

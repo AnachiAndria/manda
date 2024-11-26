@@ -1,6 +1,6 @@
 <script setup>
-import { useFetch } from '@vueuse/core';
-import { ref } from 'vue';
+import { useFetch } from '@vueuse/core'
+import { ref } from 'vue'
 
 // Define headers and Mention data
 const headers = ref([
@@ -110,6 +110,7 @@ const addMention = async () => {
 
 // Save (edit Mention) - communicating with backend
 const save = async () => {
+  
   if (editedIndex.value > -1) {
     try {
       const response = await fetch(`http://localhost:3000/api/mention/mention/${editedItem.value.id}`, {
