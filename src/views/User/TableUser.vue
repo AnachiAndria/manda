@@ -6,7 +6,7 @@ import { ref } from 'vue'
 const headers = ref([
   { title: 'Nom', key: 'nom' },
   { title: 'Prénoms', key: 'prenom' },
-  { title: 'Email', key: 'mail' },
+  { title: 'Email', key: 'email' },
   { title: 'Mot de Passe', value: 'mdp' },
   { title: 'Action', value: 'actions' },
 ])
@@ -19,7 +19,7 @@ const userData = useCookie('userData')
 // Fetch user from the backend
 const fetchUser = async () => {
   try {
-    const res = await useFetch('http://localhost:5000/api/user/', {
+    const res = await useFetch('http://localhost:3000/api/user/user', {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -31,6 +31,7 @@ const fetchUser = async () => {
 
     if (res.data.value) {
       user.value = JSON.parse(res.data.value) // Parse JSON data
+      console.log(user.value)
     } else if (res.error.value) {
       errors.value.push('Error fetching data')
     }
@@ -66,6 +67,7 @@ const editedIndex = ref(-1)
 const editItem = item => {
   editedIndex.value = user.value.indexOf(item)
   editedItem.value = { ...item }
+  editedItem.value.mail = item.email
   editDialog.value = true
 }
 
@@ -82,6 +84,7 @@ const close = () => {
   addDialog.value = false
   editedIndex.value = -1
   editedItem.value = { ...defaultItem.value }
+  fetchUser()
 }
 
 // Close delete dialog
@@ -89,12 +92,15 @@ const closeDelete = () => {
   deleteDialog.value = false
   editedIndex.value = -1
   editedItem.value = { ...defaultItem.value }
+  fetchUser()
 }
 
 // Add user (communicating with backend)
 const adduser = async () => {
   try {
-    const response = await fetch('http://localhost:5000/api/user/add', {
+    console.log(editedItem.value)
+
+    const response = await fetch('http://localhost:3000/api/user/user/add', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -119,7 +125,7 @@ const adduser = async () => {
 const save = async () => {
   if (editedIndex.value > -1) {close
     try {
-      const response = await fetch(`http://localhost:5000/api/user/update/${editedItem.value.IdUser}`, {
+      const response = await fetch(`http://localhost:3000/api/user/user/update/${editedItem.value.id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -145,7 +151,7 @@ const save = async () => {
 // Delete user (communicating with backend)
 const deleteItemConfirm = async () => {
   try {
-    const response = await fetch(`http://localhost:5000/api/user/delete/${editedItem.value.IdUser}`, {
+    const response = await fetch(`http://localhost:3000/api/user/user/delete/${editedItem.value.id}`, {
       method: 'DELETE',
     })
 
@@ -173,7 +179,7 @@ const deleteItemConfirm = async () => {
             prepend-icon="tabler-plus"
             @click="addDialog = true"
           >
-            Ajouter user
+            Ajouter utilisateur
           </VBtn>
         </div>
         <div
@@ -204,10 +210,10 @@ const deleteItemConfirm = async () => {
         <!-- Custom template for each row -->
         <template #item="{ item }">
           <!-- Vérifie si l'email de l'item est différent de celui dans le cookie, et cache sinon -->
-          <tr v-if="item.mail !== userData.mail">
+          <tr v-if="item.email !== userData.email">
             <td>{{ item.nom }}</td>
             <td>{{ item.prenom }}</td>
-            <td>{{ item.mail }}</td>
+            <td>{{ item.email }}</td>
             <td>{{ item.mdp }}</td>
             <td>
               <div class="d-flex gap-1">

@@ -2,7 +2,7 @@ export default [
   {
     title: 'Tableau de bord',
     to: { name: 'dashboards' },
-    icon: { icon: 'tabler-smart-home' },
+    icon: { icon: 'tabler-gauge' },
 
     // children: [
     //   {
