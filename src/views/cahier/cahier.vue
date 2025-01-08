@@ -1,6 +1,12 @@
 <script setup>
 import { useFetch } from '@vueuse/core'
-import { ref } from 'vue'
+import { onMounted, ref } from 'vue'
+
+import { Gpt } from "@/utils/apiGpt"
+import CahierDeTexteService from "@/utils/services/CahierDeTexteService"
+import ChapitreService from "@/utils/services/ChapitreService"
+import ElementConstitutifService from "@/utils/services/ElementConstitutifService"
+import SousChapitreService from "@/utils/services/SousChapitreService"
 
 // Define headers and Cahier data id
 const headers = ref([
@@ -24,6 +30,28 @@ const deleteDialog = ref(false)
 const addDialog = ref(false)
 
 let itemMt
+
+/* 
+VARIABLE MANDA
+*/
+const nomProfesseur = ref('')
+const dateCours = ref('')
+const heureDebut = ref('')
+const heureFin = ref('')
+const descriptionCours = ref('')
+const elementConstitutifId = ref(null)
+const chapitreId = ref(null)
+const sousChapitreId = ref(null)
+const cahiersDeTexte = ref([])
+const sousChapitres = ref([])
+const elementConstitutifs = ref([])
+const chapitres = ref([])
+const resultatRechercheEC = ref({})
+const listeChapitreResultat = ref([])
+
+/* 
+VARIABLE MANDA
+*/
 
 //get ec {}
 const getItemsM = async () => {
@@ -195,14 +223,203 @@ const deleteItemConfirm = async () => {
   }
 }
 
-//get CHapitre 
 /*
-chapitre: chapitre.titre,
-chapitre_id: chapitre.id,
-sous_chapitres:{
-  sous_chapitre_id: sousChapitre.id,
-  soustitre: sousChapitre.soustitre,
+MANDA
+ */
+
+// Services initialization
+const cahierService = new CahierDeTexteService()
+const sousChapitreService = new SousChapitreService()
+const elementConstitutifService = new ElementConstitutifService()
+const chapitreService = new ChapitreService()
+
+onMounted(async () => {
+  await fetchCahiersDeTexte()
+  await fetchSousChapitres()
+  await fetchElementConstitutif()
+  await fetchChapitre()
+})
+
+function searchChapitre(elementConstitutifId) {
+  // Récupérer les chapitres associés à l'EC sélectionné
+  const chapitresAssocies = chapitres.value.filter(
+    chapitre => chapitre.element_constitutif_id === elementConstitutifId,
+  )
+
+  // Mettre en forme le résultat final avec l'enseignant, la matière et le niveau
+  const elementConstitutif = elementConstitutifs.value.find(
+    ec => ec.id === elementConstitutifId,
+  )
+
+  const chapitre_resultat = {
+    enseignant: elementConstitutif.professeur_responsable,
+    matiere: elementConstitutif.nomEC,
+    chapitres: chapitresAssocies.map(chapitre => ({
+      chapitre: chapitre.titre,
+      chapitre_id: chapitre.id,
+      sous_chapitres: sousChapitres.value
+        .filter(sousChapitre => sousChapitre.chapitre_id === chapitre.id)
+        .map(sousChapitre => ({
+          sous_chapitre_id: sousChapitre.id,
+          soustitre: sousChapitre.soustitre,
+        })),
+    })),
+  }
+
+  console.log(chapitre_resultat)
+  resultatRechercheEC.value = chapitre_resultat
+  console.log(jsonToText(chapitre_resultat, elementConstitutifId))
 }
+
+function jsonToText(data, elementConstitutifId) {
+  // Étape 1 : Filtrer les objets avec element_constitutif_id = elementConstitutifId
+  const filtres = cahiersDeTexte.value.filter(
+    cahier => cahier.element_constitutif_id === elementConstitutifId,
+  )
+
+  // Étape 2 : Extraire et combiner tous les sous_chapitre_id à exclure
+  const idsToExclude = filtres.flatMap(cahier =>
+    cahier.sous_chapitre_id.split(","),
+  )
+
+  console.log(idsToExclude)
+  
+  return `
+  Enseignant : ${data.enseignant}
+  Matière : ${data.matiere}
+  Chapitre(s) :
+  ${data.chapitres
+    .map((chapitre, index) => {
+      // Filtrer les sous-chapitres à exclure
+      const sousChapitresFiltres = chapitre.sous_chapitres.filter(
+        sousChapitre =>
+          !idsToExclude.includes(String(sousChapitre.sous_chapitre_id).trim()),
+      )
+
+      // Retourner uniquement si le chapitre a encore des sous-chapitres après filtrage
+      if (sousChapitresFiltres.length > 0) {
+        return `
+            ${index + 1}. ${chapitre.chapitre} (ID_chapitre: ${chapitre.chapitre_id})
+            Sous-chapitres :
+          ${sousChapitresFiltres
+    .map(
+      (sousChapitre, idx) =>
+        `    ${idx + 1}. ${sousChapitre.soustitre} (ID_sousChapitre: ${
+          sousChapitre.sous_chapitre_id
+        })`,
+    )
+    .join("\n")}`
+      } else {
+        return "" // Retourne une chaîne vide pour les chapitres sans sous-chapitres visibles
+      }
+    })
+    .filter(Boolean) // Supprime les chapitres vides
+    .join("\n")}`
+}
+
+async function sendGPTRequest() {
+  const prompt =
+    "Voici le syllabus d'un matiere :" +
+    jsonToText(resultatRechercheEC.value, elementConstitutifId.value) +
+    "\nA quelle(s) sous-chapitre(s) correspond cette desciprion :" +
+    descriptionCours.value +
+    "\nLe resultat sera sous forme json avec cette structure { sousChapitre : ['ID_sousChapitre','ID_sousChapitre',...] }"
+
+  console.log(prompt)
+  
+  try {
+    const gtp = new Gpt(prompt)
+    const gptResponse = await gtp.callGptApi()
+
+    console.log("GPT Response:", gptResponse.result)
+
+    const parsedResult = convertStringToJson(gptResponse.result)
+
+    listeChapitreResultat.value = parsedResult.sousChapitre
+  } catch (error) {
+    console.error("Error in GPT API call:", error)
+  }
+}
+
+function convertStringToJson(text) {
+  // Étape 1 : Extraire le JSON depuis la chaîne d'entrée avec une expression régulière
+  const jsonMatch = text.match(/{[\s\S]*}/)
+
+  if (jsonMatch) {
+    try {
+      const jsonText = jsonMatch[0].trim() // Récupérer la chaîne JSON
+      const jsonObject = JSON.parse(jsonText) // Convertir en objet JavaScript
+
+      console.log(jsonObject) // Afficher l'objet JSON extrait
+      
+      return jsonObject
+    } catch (error) {
+      console.error("Erreur lors de l'analyse du JSON :", error)
+    }
+  } else {
+    console.log("Aucun JSON trouvé dans le texte.")
+  }
+}
+
+function enregistrerBase() {
+  sousChapitreId.value = listeChapitreResultat.value.join(",")
+  addCahierDeTexte()
+}
+
+async function fetchSousChapitres() {
+  try {
+    sousChapitres.value = await sousChapitreService.getAllSousChapitre()
+    console.log(sousChapitres.value)
+  } catch (error) {
+    console.error("Erreur lors de la récupération des sous chapitres:", error)
+  }
+}
+
+async function fetchElementConstitutif() {
+  try {
+    elementConstitutifs.value = await elementConstitutifService.getAllElementConstitutif()
+    console.log(elementConstitutifs.value)
+  } catch (error) {
+    console.error("Erreur lors de la récupération des elements constitutifs:", error)
+  }
+}
+
+async function fetchChapitre() {
+  try {
+    chapitres.value = await chapitreService.getAllChapitre()
+    console.log(chapitres.value)
+  } catch (error) {
+    console.error("Erreur lors de la récupération des chapitres:", error)
+  }
+}
+
+async function fetchCahiersDeTexte() {
+  try {
+    cahiersDeTexte.value = await cahierService.getAllCahierDeTexte()
+    console.log(cahiersDeTexte.value)
+  } catch (error) {
+    console.error("Erreur lors de la récupération des cahiers de texte:", error)
+  }
+}
+
+async function addCahierDeTexte() {
+  try {
+    await cahierService.createCahierDeTexte(
+      dateCours.value,
+      heureDebut.value,
+      heureFin.value,
+      descriptionCours.value,
+      elementConstitutifId.value,
+      sousChapitreId.value,
+    )
+    await fetchCahiersDeTexte()
+  } catch (error) {
+    console.error("Erreur lors de l'ajout du cahier de texte:", error)
+  }
+}
+
+/*
+MANDA
  */
 </script>
 

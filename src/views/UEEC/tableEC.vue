@@ -8,6 +8,7 @@ const headers = ref([
   { title: 'professeur', key: 'professeur_responsable' },
   { title: 'semestre', key: 'session' },
   { title: 'UE', key: 'nomUE' },
+  { title: 'Parcour',key:'nom_parcours'},
   { title: 'Action', value: 'actions' },
 ])
 
@@ -248,6 +249,9 @@ const deleteItemConfirm = async () => {
         </template>
         <template #item.nomUE="{ item }">
           {{ item.nomUE }}
+        </template>
+        <template #item.nom_parcours="{ item }">
+          {{ item.nom_parcours }}
         </template>
         <template #item.actions="{ item }">
           <div class="d-flex gap-1">

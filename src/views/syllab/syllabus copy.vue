@@ -276,32 +276,121 @@ watch(()=> editedItem.value.ue, () =>{
 /* METHODE MANDA */
 // Methods
 async function handlePdfUpload(file) {
-    const prompt = `Extraire le nom du professeur,horaire,objectif,parcours,niveau(une seule niveau :L1 ou L2 ou L3 ou M1 ou M2), la matière enseignée, ainsi que les chapitres et sous-chapitres sous format json et repond directement avec cette structure
-    {
-          "enseignant": "...",
-          "parcours":"...",
-          "matiere": "...",
-          "horaire": "...",
-          "objectif": "..."
-          "niveau": "...",
-          "chapitres": [
-            {
-              "titre":"...", "chapitre": 1,
-               "titre" : "le titre",
-              "sous-chapitres": [
-                "...",
-                ...
-              ]
-            }...
-    } 
-    et laisse vide si l'information n'est pas dans le texte suivant,?\n\n${file}`;
+    // const prompt = `Extraire le nom du professeur,horaire,objectif,parcours,niveau(une seule niveau :L1 ou L2 ou L3 ou M1 ou M2), la matière enseignée, ainsi que les chapitres et sous-chapitres sous format json et repond directement avec cette structure
+    // {
+    //       "enseignant": "...",
+    //       "parcours":"...",
+    //       "matiere": "...",
+    //       "horaire": "...",
+    //       "objectif": "..."
+    //       "niveau": "...",
+    //       "chapitres": [
+    //         {
+    //           "titre":"...", "chapitre": 1,
+    //            "titre" : "le titre",
+    //           "sous-chapitres": [
+    //             "...",
+    //             ...
+    //           ]
+    //         }...
+    // } 
+    // et laisse vide si l'information n'est pas dans le texte suivant,?\n\n${file}`;
     
     try {
-      const gtp = new Gpt(prompt);
-      const gptResponse = await gtp.callGptApi();
-      resutGPT.value += gptResponse.result;    
-      contentTable.value = convertStringToJson(gptResponse.result);
-
+    //   const gtp = new Gpt(prompt);
+    //   const gptResponse = await gtp.callGptApi();
+    //   resutGPT.value += gptResponse.result;
+    
+      // contentTable.value = convertStringToJson(gptResponse.result);
+      let resp = `
+      
+      {
+        "enseignant": "Herijaona RANDRIAMITAHITSOA",
+        "parcours": "ASR",
+        "matiere": "English",
+        "horaire": "12",
+        "objectif": "Development of fundamental linguistic skills and introduction of vocabulary and concepts related to computer science",
+        "niveau": "L1",
+        "chapitres": [
+            {
+                "titre": "Introduction to English and Basic Communication",
+                "chapitre": 1,
+                "sous-chapitres": [
+                    "Introduction to the English alphabet and pronunciation",
+                    "Greetings and introducing oneself",
+                    "Simple questions and answers",
+                    "Basic vocabulary for numbers, days of the week, and months",
+                    "Role - play exercises for basic interactions"
+                ]
+            },
+            {
+                "titre": "Grammar - Present Simple Tense",
+                "chapitre": 2,
+                "sous-chapitres": [
+                    "Affirmative, negative, and interrogative sentences",
+                    "Everyday routines and habits",
+                    "Adverbs of frequency",
+                    "Practice exercises, dialogues, and short essays"
+                ]
+            },
+            {
+                "titre": "Vocabulary - Computer Science Basics",
+                "chapitre": 3,
+                "sous-chapitres": [
+                    "Introduction to computer science terminology",
+                    "Common hardware and software terms",
+                    "Describing computer parts and functions",
+                    "Role - play exercises on buying and setting up a computer"
+                ]
+            },
+            {
+                "titre": "Grammar - Present Continuous Tense",
+                "chapitre": 4,
+                "sous-chapitres": [
+                    "Actions happening now",
+                    "Affirmative, negative, and interrogative sentences",
+                    "Expressing future plans",
+                    "Practical exercises, dialogues, and short presentations"
+                ]
+            },
+            {
+                "titre": "Vocabulary - Internet and Networking",
+                "chapitre": 5,
+                "sous-chapitres": [
+                    "Internet-related vocabulary",
+                    "Describing web browsing and email",
+                    "Discussing online safety",
+                    "Role - play exercises on booking flights and using email"
+                ]
+            },
+            {
+                "titre": "Grammar - Past Simple Tense",
+                "chapitre": 6,
+                "sous-chapitres": [
+                    "Past actions and events",
+                    "Regular and irregular verbs",
+                    "Storytelling and recounting personal experiences",
+                    "Practice exercises, narratives, and discussions"
+                ]
+            },
+            {
+                "titre": "Computer Science Discussions",
+                "chapitre": 7,
+                "sous-chapitres": [
+                    "Discussing computer science topics and innovations",
+                    "Group discussions and presentations on technology trends",
+                    "Computer science-related projects and presentations"
+                ]
+            }
+        ]
+      }
+    `;
+      contentTable.value = convertStringToJson(resp);
+      // rechercheResultat.value = searchUE(
+      //   contentTable.value.matiere,
+      //   contentTable.value.niveau
+      // );
+      // console.log(gptResponse.result);
 
     } catch (error) {
       console.error("Error in GPT API call:", error);
@@ -309,13 +398,14 @@ async function handlePdfUpload(file) {
   }
   
   function convertStringToJson(text) {
-    const jsonMatch = text.match(/```json([\s\S]*?)```/);
-    if (jsonMatch && jsonMatch[1]) {
-      const jsonText = jsonMatch[1].trim();
-      return JSON.parse(jsonText);
-    }
-    console.log("Aucun JSON trouvé dans le texte.");
-    return {};
+    // const jsonMatch = text.match(/```json([\s\S]*?)```/);
+    // if (jsonMatch && jsonMatch[1]) {
+    //   const jsonText = jsonMatch[1].trim();
+    //   return JSON.parse(jsonText);
+    // }
+    // console.log("Aucun JSON trouvé dans le texte.");
+    // return {};
+    return JSON.parse(text);
   }
   
   async function onFileChange(e) {
