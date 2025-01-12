@@ -106,7 +106,7 @@ const getItemsM = async () => {//get ec
 
 const fetchCahier = async () => {// Fetch Cahiers from the backend
   try {
-    const res = await useFetch('http://localhost:3000/api/cahier-de-texte/cahier-Add-Liste', {
+    const res = await useFetch('http://localhost:3000/api/cahier-de-texte/cahier-de-texte', {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -580,7 +580,7 @@ watch(Snackbar, (newValue) => {
 <template>
   <VCol>
     <h3 class="text-h3 font-weight-medium mb-5">
-      Cahiers de texte de la semaine
+      Liste Cahiers de texte 
         </h3>
   </VCol>
   <VCard>
@@ -588,12 +588,12 @@ watch(Snackbar, (newValue) => {
       <div class="d-flex justify-space-between flex-wrap gap-4">
         <div class="d-flex gap-4 align-center">
           <!-- Add Cahier Button -->
-          <VBtn
+          <!-- <VBtn
             prepend-icon="tabler-plus"
             @click="addDialog = true"
           >
             Ajouter Cahier de texte
-          </VBtn>
+          </VBtn> -->
         </div>
         <div
           class="d-flex align-center flex-wrap gap-4"
