@@ -641,3 +641,4 @@ async function handlePdfUpload(file) {
   color: red;
 }
 </style>
+

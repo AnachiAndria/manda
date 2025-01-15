@@ -134,10 +134,10 @@ const onSubmit = () => {
             style="inline-size: 15%;"
           />
           <h4 class="text-h4 mb-1">
-            Welcome to <span class="text-capitalize">{{ themeConfig.app.title }}</span>! 👋🏻
+            Bienvenue sur <span class="text-capitalize">{{ themeConfig.app.title }}</span>! 👋🏻
           </h4>
           <p class="mb-0">
-            Please sign-in to your account and start the adventure
+            Veuillez vous connecter à votre compte pour commencer l'aventure
           </p>
         </VCardText>
         <VCardText>
@@ -163,7 +163,7 @@ const onSubmit = () => {
               <VCol cols="12">
                 <AppTextField
                   v-model="credentials.password"
-                  label="Password"
+                  label="Mot de passe"
                   placeholder="············"
                   :rules="[requiredValidator]"
                   :type="isPasswordVisible ? 'text' : 'password'"
@@ -175,40 +175,32 @@ const onSubmit = () => {
                 <div class="d-flex align-center flex-wrap justify-space-between mt-2 mb-4">
                   <VCheckbox
                     v-model="credentials.remember"
-                    label="Remember me"
+                    label="Se souvenir de moi"
                   />
-                  <!--
-                    <a
-                    class="text-primary ms-2 mb-1"
-                    href="#"
-                    >
-                    Forgot Password?
-                    </a> 
-                  -->
                 </div>
 
                 <VBtn
                   block
                   type="submit"
                 >
-                  Login
+                  Connexion
                 </VBtn>
               </VCol>
 
               <!-- create account -->
-              <VCol
+              <!-- <VCol
                 cols="12"
                 class="text-center text-base"
               >
-                <span>New on our platform?</span>
+                <span>Nouveau sur notre plateforme ?</span>
 
                 <a
                   class="text-primary ms-2"
                   href="#"
                 >
-                  Create an account
+                  Créer un compte
                 </a>
-              </VCol>
+              </VCol> -->
 
               <VCol
                 cols="12"

@@ -213,7 +213,12 @@ const editItem = item => {
   originalNomEC.value = item.nomEC;
   editDialog.value = true
 }
-
+// const editItem = item => {
+//   editedIndex.value = Cahier.value.indexOf(item)
+//   editedItem.value = { ...item }
+//   originalNomEC.value = item.nomEC;
+//   editDialog.value = true
+// }
 // Open delete dialog
 const deleteItem = item => {
   editedIndex.value = Cahier.value.indexOf(item)
@@ -1015,7 +1020,7 @@ watch(Snackbar, (newValue) => {
         Confirmer Suppression
       </VCardTitle>
       <VCardText>
-        Êtes-vous sûr de vouloir supprimer le cahier de texte pour la matière{{ editedItem.nomEC }} ?
+        Êtes-vous sûr de vouloir supprimer le cahier de texte pour la matière {{ editedItem.nomEC }} ?
       </VCardText>
       <VCardActions>
         <VSpacer />

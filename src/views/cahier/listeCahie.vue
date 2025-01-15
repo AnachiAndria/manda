@@ -1015,7 +1015,7 @@ watch(Snackbar, (newValue) => {
         Confirmer Suppression
       </VCardTitle>
       <VCardText>
-        Êtes-vous sûr de vouloir supprimer le cahier de texte pour la matière{{ editedItem.nomEC }} ?
+        Êtes-vous sûr de vouloir supprimer le cahier de texte pour la matière {{ editedItem.nomEC }} ?
       </VCardText>
       <VCardActions>
         <VSpacer />
