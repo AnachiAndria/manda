@@ -41,7 +41,7 @@ const getItemsM = async () => {
     if (Array.isArray(data)) {
       itemMt = data.map(UE => ({
         unite_enseignement_id: UE.id,
-        nomUE: UE.nomUE,
+        nomUE: UE.nomUE+', ('+UE.niveau+')',
       }))
     } else {
       console.error('Unexpected data structure:', data)
@@ -156,7 +156,7 @@ const addEC = async () => {
 const save = async () => {
   if (editedIndex.value > -1) {
     try {
-      const response = await fetch(`http://localhost:3000/api/EC/EC/${editedItem.value.id}`, {
+      const response = await fetch(`http://localhost:3000/api/EC/ECfront/${editedItem.value.id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -165,7 +165,8 @@ const save = async () => {
       })
 
       if (response.ok) {
-        Object.assign(EC.value[editedIndex.value], editedItem.value)
+        // Object.assign(EC.value[editedIndex.value], editedItem.value)
+        fetchEC()
         close() // Close dialog
       } else {
         const data = await response.json()
